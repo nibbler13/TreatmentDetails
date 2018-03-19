@@ -22,7 +22,7 @@ namespace TreatmentDetails {
 		private string bdate = string.Empty;
 		private string fdate = string.Empty;
 		private string treatcount = string.Empty;
-		private string mkbcode = string.Empty;
+		private string mkbcodes = string.Empty;
 		private string filid = string.Empty;
 		private string filname = string.Empty;
 		private string[] selectedFilials = new string[0];
@@ -39,7 +39,7 @@ namespace TreatmentDetails {
 
 			DatePickerBegin.SelectedDate = DateTime.Now.AddDays(-30);
 			DatePickerFinish.SelectedDate = DateTime.Now;
-			TextBoxMkbCode.Text = "g90.9";
+			TextBoxMkbCodes.Text = "g90.9";
 			TextBoxTreatCount.Text = "30";
 			ListBoxSelected.Items.Add("СУЩ");
 			ListBoxSelected.Items.Add("МДМ");
@@ -72,8 +72,8 @@ namespace TreatmentDetails {
 				string.IsNullOrWhiteSpace(TextBoxTreatCount.Text))
 				checkResult += Environment.NewLine + "Количество лечений";
 
-			if (string.IsNullOrEmpty(TextBoxMkbCode.Text) ||
-				string.IsNullOrWhiteSpace(TextBoxMkbCode.Text))
+			if (string.IsNullOrEmpty(TextBoxMkbCodes.Text) ||
+				string.IsNullOrWhiteSpace(TextBoxMkbCodes.Text))
 				checkResult += Environment.NewLine + "Код МКБ-10";
 
 			if (!string.IsNullOrEmpty(checkResult)) {
@@ -91,7 +91,7 @@ namespace TreatmentDetails {
 			bdate = DatePickerBegin.SelectedDate.Value.ToShortDateString();
 			fdate = DatePickerFinish.SelectedDate.Value.ToShortDateString();
 			treatcount = TextBoxTreatCount.Text;
-			mkbcode = TextBoxMkbCode.Text;
+			mkbcodes = TextBoxMkbCodes.Text;
 			List<string> values = new List<string>();
 			foreach (string item in ListBoxSelected.Items)
 				values.Add(item);
@@ -123,9 +123,19 @@ namespace TreatmentDetails {
 		private void BackgroundWorkerMain_DoWork(object sender, DoWorkEventArgs e) {
 			List<string> treatcodes = new List<string>();
 
-			foreach (string item in selectedFilials) {
-				filid = filials.First(i => i.SHORTNAME == item).FILID;
-				treatcodes.AddRange(DataHandle.GetTreatcodes(bdate, fdate, treatcount, mkbcode, filid));
+			string[] mkbcodesArray = mkbcodes.Split(',');
+
+			BackgroundWorker backgroundWorker = sender as BackgroundWorker;
+			double progressCurrent = 0;
+			double progressStep = 20.0 / (mkbcodesArray.Length + selectedFilials.Length);
+
+			foreach (string mkbcode in mkbcodesArray) {
+				foreach (string filial in selectedFilials) {
+					backgroundWorker.ReportProgress((int)progressCurrent, "Получение данных о лечениях для диагноза " + mkbcode + " для филиала " + filial);
+					filid = filials.First(i => i.SHORTNAME == filial).FILID;
+					treatcodes.AddRange(DataHandle.GetTreatcodes(bdate, fdate, treatcount, mkbcode, filid));
+					progressCurrent += progressStep;
+				}
 			}
 
 			if (treatcodes.Count == 0) {
@@ -133,21 +143,24 @@ namespace TreatmentDetails {
 				return;
 			}
 
-			List<ItemTreatmentDetails> details = DataHandle.GetDetails(treatcodes);
+			List<ItemTreatmentDetails> details = DataHandle.GetDetails(treatcodes, backgroundWorker, 20);
 			if (details.Count == 0) {
 				MessageBox.Show("Не удалось получить информацию про лечения", "", MessageBoxButton.OK, MessageBoxImage.Information);
 				return;
 			}
 
-			string filePrefix = "Отчет по использованию направлений " + mkbcode + " с " + bdate + " по " + fdate;
-			string resultFile = NpoiExcel.WriteDataToExcel(details, filePrefix);
+			string filePrefix = "Отчет по использованию направлений " + mkbcodes + " с " + bdate + " по " + fdate;
+			string resultFile = NpoiExcel.WriteDataToExcel(details, filePrefix, backgroundWorker, 90);
 
 			if (File.Exists(resultFile))
 				Process.Start(resultFile);
+
+			backgroundWorker.ReportProgress(100, "Завершено");
 		}
 
 		private void BackgroundWorkerMain_ProgressChanged(object sender, ProgressChangedEventArgs e) {
 			ProgressBarMain.Value = e.ProgressPercentage;
+			TextBoxProgress.Text = e.UserState.ToString();
 		}
 
 		private void ButtonToRight_Click(object sender, RoutedEventArgs e) {

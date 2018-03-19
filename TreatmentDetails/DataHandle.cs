@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Globalization;
 using System.Linq;
@@ -72,12 +73,17 @@ namespace TreatmentDetails {
 			return list;
 		}
 
-		public static List<ItemTreatmentDetails> GetDetails(List<string> treatcodes) {
+		public static List<ItemTreatmentDetails> GetDetails(List<string> treatcodes, BackgroundWorker backgroundWorker, double progressCurrent) {
 			List<ItemTreatmentDetails> list = new List<ItemTreatmentDetails>();
 
+			double progressStep = 70.0 / treatcodes.Count;
+			int currentTreat = 1;
 			foreach (string treatcode in treatcodes) {
+				backgroundWorker.ReportProgress((int)progressCurrent, "Получение данных о лечении " + currentTreat + " / " + treatcodes.Count);
+				currentTreat++;
 				DataTable dataTable = firebirdClient.GetDataTable(sqlQuerySelectDetails, new Dictionary<string, string> {
 					{ "@treatcode", treatcode } });
+				progressCurrent += progressStep;
 
 				if (dataTable.Rows.Count == 0)
 					continue;

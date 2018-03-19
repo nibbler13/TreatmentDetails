@@ -14,6 +14,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <WrapPanel Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,10">
             <TextBlock Text="Период формирования с: " VerticalAlignment="Center"/>
@@ -30,15 +31,23 @@
             </WrapPanel>
             <ListBox Width="150" Height="150" x:Name="ListBoxSelected" MouseDoubleClick="ListBoxSelected_MouseDoubleClick"/>
         </WrapPanel>
-        <WrapPanel Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="0,10">
-            <TextBlock Text="Количество лечений" VerticalAlignment="Center"/>
-            <TextBox Width="50" Margin="10,0,0,0" x:Name="TextBoxTreatCount"/>
-        </WrapPanel>
-        <WrapPanel Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="0,10">
-            <TextBlock Text="Код МКБ-10:" VerticalAlignment="Center"/>
-            <TextBox Width="50" Margin="10,0,0,0" x:Name="TextBoxMkbCode"/>
-        </WrapPanel>
+        <StackPanel Grid.Row="2" Margin="0,10" HorizontalAlignment="Center">
+            <WrapPanel Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock Text="Код МКБ-10:" VerticalAlignment="Center"/>
+                <TextBox Width="300" Margin="10,0,0,0" x:Name="TextBoxMkbCodes"/>
+            </WrapPanel>
+            <TextBlock Text="Допускается ввод нескольких значений через запятую, название группы&#x0a;Например: g90.1,g90.2,g90.3 или можно указать всю группу g90" Foreground="DarkGray" HorizontalAlignment="Center" TextAlignment="Center"/>
+        </StackPanel>
+        <StackPanel Grid.Row="3" Margin="0,10">
+            <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center"  >
+                <TextBlock Text="Количество лечений" VerticalAlignment="Center"/>
+                <TextBox Width="50" Margin="10,0,0,0" x:Name="TextBoxTreatCount"/>
+            </WrapPanel>
+            <TextBlock Text="Указывается максимальное количество лечений, которые будут выбраны]&#x0a;случайным образом из имеющихся лечений для каждого диагноза" 
+                       Foreground="DarkGray" HorizontalAlignment="Center" TextAlignment="Center"/>
+        </StackPanel>
         <Button Grid.Row="4" Content="Сформировать" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,10" Click="Button_Click"/>
         <ProgressBar Grid.Row="5" Height="10" Margin="0,10" x:Name="ProgressBarMain"/>
+        <TextBox Grid.Row="6" IsReadOnly="True" x:Name="TextBoxProgress"/>
     </Grid>
 </Window>

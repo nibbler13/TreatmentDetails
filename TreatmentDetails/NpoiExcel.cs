@@ -15,8 +15,9 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace TreatmentDetails {
 	class NpoiExcel {
-		public static string WriteDataToExcel(List<ItemTreatmentDetails> details, string resultFilePrefix) {
+		public static string WriteDataToExcel(List<ItemTreatmentDetails> details, string resultFilePrefix, BackgroundWorker backgroundWorker, double progressCurrent) {
 			string templateFile = SystemLogging.AssemblyDirectory + "Template.xlsx";
+			double progressStep = 10.0 / details.Count;
 			foreach (char item in Path.GetInvalidFileNameChars())
 				resultFilePrefix = resultFilePrefix.Replace(item, '-');
 
@@ -39,6 +40,7 @@ namespace TreatmentDetails {
 			ISheet sheet = workbook.GetSheet("Data");
 
 			foreach (ItemTreatmentDetails item in details) {
+				backgroundWorker.ReportProgress((int)progressCurrent, "Запись в excel строки " + rowNumber + " / " + details.Count);
 				IRow row = sheet.CreateRow(rowNumber);
 				//Console.WriteLine("create row: " + row);
 
@@ -131,6 +133,7 @@ namespace TreatmentDetails {
 
 				columnNumber = 0;
 				rowNumber++;
+				progressCurrent += progressStep;
 			}
 
 			sheet = workbook.GetSheet("Services");
