@@ -70,6 +70,7 @@ namespace TreatmentDetails {
 					item.PATIENTNAME,
 					item.HISTNUM,
 					item.BDATE,
+					item.TREAT_TYPE,
 					item.MKBCODE,
 					item.Referrals.Count.ToString(),
 					referralPeriodMax

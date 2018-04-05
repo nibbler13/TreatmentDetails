@@ -15,6 +15,7 @@ namespace TreatmentDetails {
 		public string HISTNUM { get; set; } = string.Empty;
 		public string BDATE { get; set; } = string.Empty;
 		public string MKBCODE { get; set; } = string.Empty;
+		public string TREAT_TYPE { get; set; } = string.Empty;
 		public List<ItemReferral> Referrals { get; set; } = new List<ItemReferral>();
 	}
 }

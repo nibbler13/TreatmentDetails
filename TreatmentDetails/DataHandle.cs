@@ -94,16 +94,20 @@ namespace TreatmentDetails {
 					try {
 						if (details == null) {
 							details = new ItemTreatmentDetails() {
-								FILIALNAME = row["SHORTNAME"].ToString(),
+								FILIALNAME = row["FILIAL"].ToString(),
 								TREATCODE = row["TREATCODE"].ToString(),
 								TREATDATE = row["TREATDATE"].ToString(),
-								DOCNAME = row["FULLNAME"].ToString(),
+								DOCNAME = row["DOCTORNAME"].ToString(),
 								DEPNAME = row["DEPNAME"].ToString(),
-								PATIENTNAME = row["FULLNAME1"].ToString(),
+								PATIENTNAME = row["CLIENTNAME"].ToString(),
 								HISTNUM = row["HISTNUM"].ToString(),
 								BDATE = row["BDATE"].ToString(),
 								MKBCODE = row["MKBCODE"].ToString(),
 							};
+
+							string listAllServices = row["LISTALLSERVICES"].ToString().ToUpper();
+							details.TREAT_TYPE = listAllServices.Contains("ПЕРВИЧНЫЙ") ?
+								"Первичный" : "Повторный";
 						}
 
 						string refid = row["REFID"].ToString();
@@ -114,11 +118,11 @@ namespace TreatmentDetails {
 							REFID = refid,
 							SCHNAME = row["SCHNAME"].ToString(),
 							SCOUNT = row["SCOUNT"].ToString(),
-							SHORTNAME1 = row["SHORTNAME1"].ToString(),
-							TREATDATE1 = row["TREATDATE1"].ToString(),
-							FULLNAME2 = row["FULLNAME2"].ToString(),
-							DEPNAME1 = row["DEPNAME1"].ToString(),
-							SCHNAME1 = row["SCHNAME1"].ToString(),
+							SHORTNAME1 = row["REFFILIAL"].ToString(),
+							TREATDATE1 = row["REFTREATDATE"].ToString(),
+							FULLNAME2 = row["REFDOCTORNAME"].ToString(),
+							DEPNAME1 = row["REFDEPNAME"].ToString(),
+							SCHNAME1 = row["REFSCHNAME"].ToString(),
 							SCHCOUNT = row["SCHCOUNT"].ToString()
 						};
 
